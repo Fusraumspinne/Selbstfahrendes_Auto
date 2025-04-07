@@ -12,7 +12,6 @@ def setup():
     print("Warte auf Stabilisierung des Sensors...")
     time.sleep(2)
 
-
 def measure_distance():
     GPIO.output(TRIG, True)
     time.sleep(0.00001)  
@@ -37,6 +36,8 @@ def main():
         while True:
             dist = measure_distance()
             print("Entfernung: {:.2f} cm".format(dist))
+            kiInput = min(dist / 100.0, 1)
+            print(f"Ki-Input: {kiInput}")
             time.sleep(1) 
     except KeyboardInterrupt:
         print("\nMessung beendet. Bereinige die GPIO-Pins auf.")
