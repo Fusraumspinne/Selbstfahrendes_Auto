@@ -1,0 +1,13 @@
+Raspberry:
+Pin 1 => VCCA unten (Pegelwandler)
+Pin 2 => VCCB unten (Pegelwandler)
+Pin 6 => GND unten (Pegelwandler)
+Pin 16 => A0 (Pegelwandler)
+Pin 18 => A1 (Pegelwandler)
+
+Ultraschallsensor:
+
+Vcc => VCCB oben (Pegelwandler)
+Trig => B0 (Pegelwandler)
+Echo => B1 (Pegelwandler)
+Gnd => GND oben (Pegelwandler)
