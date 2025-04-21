@@ -1,0 +1,62 @@
+Raspberry Pi
+├─ Pin 1  (3,3 V)
+│    └→ Breadboard Row 1 (3,3 V)
+│         ├→ LS 1 VCCA
+│         ├→ LS 2 VCCA
+│         └→ LS 3 VCCA
+│
+├─ Pin 2  (5 V)
+│    └→ Breadboard Row 2 (5 V)
+│         ├→ Sensor 1 VCC
+│         ├→ Sensor 2 VCC
+│         ├→ Sensor 3 VCC
+│         ├→ Sensor 4 VCC
+│         ├→ Sensor 5 VCC
+│         ├→ Sensor 6 VCC
+│         ├→ Sensor 7 VCC
+│         ├→ Sensor 8 VCC
+│         ├→ Sensor 9 VCC
+│         ├→ LS 1 VCCB
+│         ├→ LS 2 VCCB
+│         └→ LS 3 VCCB
+│
+└─ Pin 6  (GND)
+     └→ Breadboard Row 3 (GND)
+          ├→ Sensor 1 GND
+          ├→ Sensor 2 GND
+          ├→ Sensor 3 GND
+          ├→ Sensor 4 GND
+          ├→ Sensor 5 GND
+          ├→ Sensor 6 GND
+          ├→ Sensor 7 GND
+          ├→ Sensor 8 GND
+          ├→ Sensor 9 GND
+          ├→ LS 1 GND
+          ├→ LS 2 GND
+          └→ LS 3 GND
+
+Signal‑Zuordnung über die Level Shifter:
+
+LS 1 (für Sensor 1–4):
+├─ GPIO 4   (Pin 7)  → A0 → B0 → Sensor 1 TRIG  
+├─ GPIO 17  (Pin 11) → A1 → B1 → Sensor 1 ECHO  
+├─ GPIO 18  (Pin 12) → A2 → B2 → Sensor 2 TRIG  
+├─ GPIO 27  (Pin 13) → A3 → B3 → Sensor 2 ECHO  
+├─ GPIO 22  (Pin 15) → A4 → B4 → Sensor 3 TRIG  
+├─ GPIO 10  (Pin 19) → A5 → B5 → Sensor 3 ECHO  
+├─ GPIO 9   (Pin 21) → A6 → B6 → Sensor 4 TRIG  
+└─ GPIO 11  (Pin 23) → A7 → B7 → Sensor 4 ECHO  
+
+LS 2 (für Sensor 5–8):
+├─ GPIO 5   (Pin 29) → A0 → B0 → Sensor 5 TRIG  
+├─ GPIO 6   (Pin 31) → A1 → B1 → Sensor 5 ECHO  
+├─ GPIO 12  (Pin 32) → A2 → B2 → Sensor 6 TRIG  
+├─ GPIO 13  (Pin 33) → A3 → B3 → Sensor 6 ECHO  
+├─ GPIO 16  (Pin 36) → A4 → B4 → Sensor 7 TRIG  
+├─ GPIO 19  (Pin 35) → A5 → B5 → Sensor 7 ECHO  
+├─ GPIO 20  (Pin 38) → A6 → B6 → Sensor 8 TRIG  
+└─ GPIO 21  (Pin 40) → A7 → B7 → Sensor 8 ECHO  
+
+LS 3 (für Sensor 9):
+├─ GPIO 26  (Pin 37) → A0 → B0 → Sensor 9 TRIG  
+└─ GPIO 14  (Pin 8)  → A1 → B1 → Sensor 9 ECHO  
