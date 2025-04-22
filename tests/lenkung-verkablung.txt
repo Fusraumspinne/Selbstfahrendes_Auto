@@ -1,0 +1,3 @@
+schwarz => gnd
+rot => 5V
+weiß => gpio18 
