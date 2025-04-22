@@ -29,9 +29,7 @@ def get_heading():
     x, y, z = read_raw()
     heading_rad = math.atan2(y, x)
     heading_deg = math.degrees(heading_rad)
-    if heading_deg < 0:
-        heading_deg += 360
-    return heading_deg / 360.0
+    return heading_deg / 180.0
 
 sensors = [
     ("Sensor 1",  4, 17),
