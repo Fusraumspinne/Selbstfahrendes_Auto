@@ -63,7 +63,7 @@ public class Car : MonoBehaviour
             float[] output = net.FeedForward(inputs);
 
             float newSteeringInput = Mathf.Clamp(output[0], -1f, 1f);
-            steeringInput = newSteeringInput; 
+            steeringInput = newSteeringInput;
             previousSteeringInput = steeringInput;
 
             float forwardSpeed = Vector3.Dot(rig.velocity, transform.forward);

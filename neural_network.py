@@ -29,7 +29,8 @@ def get_heading():
     x, y, z = read_raw()
     heading_rad = math.atan2(y, x)
     heading_deg = math.degrees(heading_rad)
-    return heading_deg / 180.0
+    print(heading_deg)
+    return (heading_deg - 180) / 180.0
 
 sensors = [
     ("Sensor 1",  4, 17),
@@ -77,7 +78,7 @@ def calc_distance():
             distances.append(1.0)
         else:
             distances.append(dist / 75.0)
-        time.sleep(0.01)
+        time.sleep(0.001)
     return distances
 
 class NeuralNetwork:
@@ -137,7 +138,7 @@ pi = pigpio.pi()
 pi.set_mode(PI_GPIO, pigpio.OUTPUT)
 
 def set_steering(v):
-    v = max(min(v, 0.9), -0.9)
+    # v = max(min(v, 0.99), -0.99)
     us = int(1500 + v * 500) 
     pi.set_servo_pulsewidth(PI_GPIO, us)
     print(v)
