@@ -16,10 +16,11 @@ def setup_qmc():
 
 def read_raw():
     data = bus.read_i2c_block_data(ADDRESS, 0x00, 6)
+    
     x = data[1] << 8 | data[0]
     y = data[3] << 8 | data[2]
     z = data[5] << 8 | data[4]
-    
+
     x = x - 65536 if x > 32767 else x
     y = y - 65536 if y > 32767 else y
     z = z - 65536 if z > 32767 else z
@@ -29,8 +30,7 @@ def get_heading():
     x, y, z = read_raw()
     heading_rad = math.atan2(y, x)
     heading_deg = math.degrees(heading_rad)
-    print(heading_deg)
-    return (heading_deg - 180) / 180.0
+    return ((heading_deg - 90) / 180.0)
 
 sensors = [
     ("Sensor 1",  4, 17),
@@ -59,6 +59,7 @@ def measure_distance(trig_pin, echo_pin):
 
     start = time.time()
     timeout = start + 0.02 
+
     while GPIO.input(echo_pin) == 0 and time.time() < timeout:
         start = time.time()
     stop = time.time()
@@ -74,11 +75,11 @@ def calc_distance():
     distances = []
     for _, trig, echo in sensors:
         dist = measure_distance(trig, echo)
-        if dist <= 0 or dist > 75:
+        if dist <= 0 or dist > 100:
             distances.append(1.0)
         else:
-            distances.append(dist / 75.0)
-        time.sleep(0.001)
+            distances.append(dist / 100.0)
+        time.sleep(0.025)
     return distances
 
 class NeuralNetwork:
@@ -112,6 +113,7 @@ class NeuralNetwork:
 
 def LoadAgent():
     file_path = os.path.join(os.getcwd(), "agent.json")
+
     if not os.path.exists(file_path):
         print("Datei nicht gefunden.")
         return None
@@ -121,8 +123,8 @@ def LoadAgent():
 
     layers = [10, 20, 20, 1]
     net = NeuralNetwork(layers)
-
     weights = []
+
     for layer in json_data["layerArrays"]:
         layerWeights = []
         for weightSet in layer["weightsArrays"]:
@@ -138,10 +140,8 @@ pi = pigpio.pi()
 pi.set_mode(PI_GPIO, pigpio.OUTPUT)
 
 def set_steering(v):
-    # v = max(min(v, 0.99), -0.99)
     us = int(1500 + v * 500) 
     pi.set_servo_pulsewidth(PI_GPIO, us)
-    print(v)
 
 def main():
     try:
@@ -157,10 +157,15 @@ def main():
             inputs = [heading] + vision
             output = net.FeedForward(inputs)[0]
             set_steering(output)
-            time.sleep(0.1)
+
+            print("Heading:", heading * 180 + 90)
+            print("Vision:", vision)
+            print("Output:", output)
+            time.sleep(0.25)
 
     except KeyboardInterrupt:
         print("Beende...")
+
     finally:
         pi.set_servo_pulsewidth(PI_GPIO, 0)
         pi.stop()
