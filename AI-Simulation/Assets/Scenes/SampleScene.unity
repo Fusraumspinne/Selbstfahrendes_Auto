@@ -17104,7 +17104,7 @@ MonoBehaviour:
   speed: 6
   randomTimeMin: 5
   randomTimeMax: 15
-  autoMove: 1
+  autoMove: 0
 --- !u!1 &1214049526
 GameObject:
   m_ObjectHideFlags: 0
