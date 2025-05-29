@@ -21342,7 +21342,7 @@ MonoBehaviour:
   genText: {fileID: 1138910050}
   agentPrefab: {fileID: 2784717867662720248, guid: 7c9546a42bb766249a9d14321a34935e, type: 3}
   target: {fileID: 1206196255}
-  populationSize: 350
+  populationSize: 200
   userInterface:
   - {fileID: 1161810293}
   - {fileID: 928750600}

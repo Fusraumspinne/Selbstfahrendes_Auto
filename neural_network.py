@@ -121,7 +121,7 @@ def LoadAgent():
     with open(file_path, "r") as file:
         json_data = json.load(file)
 
-    layers = [10, 20, 20, 1]
+    layers = [10, 64, 32, 16, 1]
     net = NeuralNetwork(layers)
     weights = []
 

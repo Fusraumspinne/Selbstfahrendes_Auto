@@ -49,7 +49,8 @@ public class Car : MonoBehaviour
             float[] vision = PerformRaycastVision();
 
             float[] inputs = new float[10];
-            inputs[0] = angleToTarget;
+            //inputs[0] = angleToTarget;
+            inputs[0] = 0;
             for (int i = 0; i < vision.Length; i++)
             {
                 if (i + 1 >= 10)
