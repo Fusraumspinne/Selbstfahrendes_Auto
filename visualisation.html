@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Neural Network Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    circle {
+      fill: lightskyblue;
+    }
+
+    line {
+      stroke: lightblue;
+      opacity: 0.6;
+    }
+
+    text {
+      font-family: sans-serif;
+      font-size: 9px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <svg></svg><button id="saveButton" style="position: fixed; top: 10px; left: 10px; z-index: 100">
+    SVG Speichern
+  </button>
+  <svg></svg>
+  <script>
+    d3.json("agent.json").then((data) => {
+      const inputSize = data.layerArrays[0].weightsArrays[0].weights.length;
+      const layers = [
+        inputSize,
+        ...data.layerArrays.map((lw) => lw.weightsArrays.length),
+      ];
+
+      const svg = d3.select("svg").attr("width", 1920).attr("height", 1080);
+      const width = 1920;
+      const height = 1080;
+
+      const maxNeuronsInLayer = d3.max(layers);
+      const totalLayers = layers.length;
+      const totalNeurons = layers.reduce((sum, count) => sum + count, 0);
+
+      const baseDiameter = Math.min(
+        height / maxNeuronsInLayer / 3,
+        width / totalLayers / 3
+      );
+      const neuronDiameter = Math.min(
+        Math.max(10, baseDiameter + 5),
+        Math.max(40, 800 / totalNeurons)
+      );
+      const radius = neuronDiameter / 2;
+      const layerSpacing = width / (totalLayers + 1);
+      const verticalSpacing = height / (maxNeuronsInLayer + 0.5);
+
+      const neuronPos = layers.map((count, li) => {
+        const totalH = (count - 1) * verticalSpacing;
+        const startY = (height - totalH) / 2;
+        const x = layerSpacing * (li + 1);
+        return d3.range(count).map((i) => ({
+          x,
+          y: startY + i * verticalSpacing,
+          layer: li,
+          index: i,
+        }));
+      });
+
+      const allNeurons = neuronPos.flat();
+      const padding = Math.max(width, height) * 0.03; // Nur 3% Padding
+      const minX = d3.min(allNeurons, (d) => d.x) - radius - padding;
+      const maxX = d3.max(allNeurons, (d) => d.x) + radius + padding;
+      const minY = d3.min(allNeurons, (d) => d.y) - radius - padding;
+      const maxY = d3.max(allNeurons, (d) => d.y) + radius + padding;
+      const bboxWidth = maxX - minX;
+      const bboxHeight = maxY - minY;
+
+      svg.attr("viewBox", `${minX} ${minY} ${bboxWidth} ${bboxHeight}`);
+      const g = svg.append("g");
+
+      const linesGroup = g.append("g");
+      const nodesGroup = g.append("g");
+
+      let links = [];
+      data.layerArrays.forEach((lw, li) => {
+        lw.weightsArrays.forEach((wArr, ti) => {
+          wArr.weights.forEach((w, fi) => {
+            links.push({
+              source: neuronPos[li][fi],
+              target: neuronPos[li + 1][ti],
+              weight: w,
+            });
+          });
+        });
+      });
+
+      const zoom = d3
+        .zoom()
+        .scaleExtent([0.1, 10])
+        .on("zoom", (event) => {
+          g.attr("transform", event.transform);
+        });
+      svg.call(zoom);
+
+      const baseLineThickness = Math.max(0.5, neuronDiameter * 0.1);
+      linesGroup
+        .selectAll("line")
+        .data(links)
+        .join("line")
+        .attr("x1", (d) => d.source.x)
+        .attr("y1", (d) => d.source.y)
+        .attr("x2", (d) => d.target.x)
+        .attr("y2", (d) => d.target.y)
+        .attr("stroke-width", (d) => Math.abs(d.weight) * 1.5)
+        .attr("stroke", (d) => (d.weight > 0 ? "#4CAF50" : "#F44336"));
+
+      const neurons = nodesGroup
+        .selectAll("g")
+        .data(neuronPos.flat())
+        .join("g")
+        .attr("transform", (d) => `translate(${d.x},${d.y})`);
+
+      neurons
+        .append("circle")
+        .attr("r", radius)
+        .on("mouseover", (event, d) => {
+          d3.select(event.target).attr("fill", "#2196F3");
+        })
+        .on("mouseout", (event) => {
+          d3.select(event.target).attr("fill", "lightskyblue");
+        })
+        .append("title")
+        .text((d) => `Layer: ${d.layer}, Neuron: ${d.index}`);
+
+      neurons
+        .append("text")
+        .attr("y", radius / 2)
+        .attr("text-anchor", "middle")
+        .attr("fill", "white")
+        .style("font-size", `${radius}px`)
+        .text((d) => d.index);
+
+      linesGroup
+        .selectAll("line")
+        .append("title")
+        .text((d) => `Weight: ${d.weight}`);
+
+      document.getElementById("saveButton").onclick = () => {
+        const svgElement = document.querySelector("svg");
+        const svgContent = svgElement.outerHTML;
+        const styleContent = document.querySelector("style").textContent;
+
+        const fullSVG = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+          <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080">
+              <defs>
+                  <style type="text/css">
+                      <![CDATA[
+                          ${styleContent}
+                      ]]>
+                  </style>
+              </defs>
+              ${svgContent}
+          </svg>`;
+
+        const blob = new Blob([fullSVG], { type: "image/svg+xml" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `neural-network-${Date.now()}.svg`;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      };
+    });
+  </script>
+</body>
+</html>
