@@ -48,17 +48,18 @@ public class Car : MonoBehaviour
 
             float[] vision = PerformRaycastVision();
 
-            float[] inputs = new float[10];
-            //inputs[0] = angleToTarget;
-            inputs[0] = 0;
+            float[] inputs = new float[11];
+            inputs[0] = angleToTarget;
+            //inputs[0] = 0;
+            inputs[1] = gasInput;
             for (int i = 0; i < vision.Length; i++)
             {
-                if (i + 1 >= 10)
+                if (i + 2 >= 11)
                 {
                     break;
                 }
 
-                inputs[i + 1] = vision[i];
+                inputs[i + 2] = vision[i];
             }
 
             float[] output = net.FeedForward(inputs);
@@ -67,12 +68,14 @@ public class Car : MonoBehaviour
             steeringInput = newSteeringInput;
             previousSteeringInput = steeringInput;
 
+            gasInput = Mathf.Clamp(output[1], -1f, 1f);
+
             float forwardSpeed = Vector3.Dot(rig.velocity, transform.forward);
             //net.AddFitness(forwardSpeed * 0.02f); 
             float distanceFactor = Mathf.Pow(0.5f, distance / 50f);
             net.AddFitness(distanceFactor);
 
-            net.AddFitness((1f - Mathf.Abs(inputs[0])) / 2);
+            //net.AddFitness((1f - Mathf.Abs(inputs[0])) / 2);
         }
     }
 

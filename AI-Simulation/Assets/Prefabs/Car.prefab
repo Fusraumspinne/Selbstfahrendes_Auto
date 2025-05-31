@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 569231527397741733}
   - component: {fileID: 5587653527102643678}
   - component: {fileID: 1094961490315059987}
+  - component: {fileID: 4039603045568246956}
   m_Layer: 3
   m_Name: Car
   m_TagString: Car
@@ -251,15 +252,41 @@ MonoBehaviour:
     FLWheel: {fileID: 7645082157060403853}
     RRWheel: {fileID: 6840052749760868993}
     RLWheel: {fileID: 3111853026887180937}
-  gasInput: 0.2
+  gasInput: 0
   steeringInput: 0
   brakeInput: 0
-  motorPower: 750
+  motorPower: 100
   brakePower: 100000
   slipAngle: 0
   speed: 0
   smoothingFactor: 2
   isBraking: 0
+--- !u!114 &4039603045568246956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2784717867662720248}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 986e60aaf281817488131aa458aa8ead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rig: {fileID: 569231527397741733}
+  wheelColliders:
+  - {fileID: 4906132614067498471}
+  - {fileID: 5917673034102873070}
+  - {fileID: 6959350862350571693}
+  - {fileID: 8352183958946472612}
+  wheelMeshes:
+  - {fileID: 3831572686376067196}
+  - {fileID: 8762834066915532100}
+  - {fileID: 3881326248521437296}
+  - {fileID: 8374615432201385836}
+  motorPower: 100
+  maxSteerAngle: 30
+  maxLifetime: 15
 --- !u!1 &2810920725043760840
 GameObject:
   m_ObjectHideFlags: 0

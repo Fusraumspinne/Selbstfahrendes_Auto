@@ -20,7 +20,7 @@ public class Manager : MonoBehaviour
     private bool isTraining = false;
     public int populationSize;
     private int generationNumber = 0;
-    private int[] layers = new int[] { 10, 64, 32, 16, 1 };
+    private int[] layers = new int[] { 11, 64, 32, 16, 2 };
     private List<NeuralNetwork> nets;
     private List<Car> agentList = null;
 
@@ -76,9 +76,13 @@ public class Manager : MonoBehaviour
             {
                 Invoke("Timer", 20f);
             }
-            else
+            else if (generationNumber <= 250)
             {
                 Invoke("Timer", 30f);
+            }
+            else
+            {
+                Invoke("Timer", 45f);
             }
 
             if (trainSavedAgents)
@@ -172,7 +176,7 @@ public class Manager : MonoBehaviour
 
         generationNumber = savedNetwork.generation;
 
-        int[] layers = { 10, 64, 32, 16, 1 };
+        int[] layers = { 11, 64, 32, 16, 2 };
         NeuralNetwork reconstructedNetwork = new NeuralNetwork(layers);
 
         float[][][] weights = new float[savedNetwork.layerArrays.Length][][];
@@ -316,7 +320,7 @@ public class Manager : MonoBehaviour
 
         generationNumber = savedNetwork.generation;
 
-        int[] layers = { 10, 64, 32, 16, 1 };
+        int[] layers = { 11, 64, 32, 16, 2 };
         NeuralNetwork reconstructedNetwork = new NeuralNetwork(layers);
 
         float[][][] weights = new float[savedNetwork.layerArrays.Length][][];
