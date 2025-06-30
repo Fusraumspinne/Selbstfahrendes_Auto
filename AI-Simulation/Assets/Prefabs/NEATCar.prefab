@@ -96,9 +96,9 @@ GameObject:
   - component: {fileID: 5673776319598486700}
   - component: {fileID: 569231527397741733}
   - component: {fileID: 5587653527102643678}
-  - component: {fileID: 1094961490315059987}
+  - component: {fileID: 2475560986491389669}
   m_Layer: 3
-  m_Name: Car
+  m_Name: NEATCar
   m_TagString: Car
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -158,7 +158,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 28646867ddcf90a4989276acd313ea43, type: 2}
+  - {fileID: 2100000, guid: 37439db0913bf43419b1b212a1548cc7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -228,7 +228,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.4172075, y: 0.8226287, z: 5.1057415}
   m_Center: {x: 0, y: 1.028544, z: -0.072930336}
---- !u!114 &1094961490315059987
+--- !u!114 &2475560986491389669
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -237,7 +237,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2784717867662720248}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c850f0a6526d4af41aa28701fe764554, type: 3}
+  m_Script: {fileID: 11500000, guid: a6e8761748036bc44b25dcef8a6b9def, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rig: {fileID: 569231527397741733}
@@ -251,7 +251,7 @@ MonoBehaviour:
     FLWheel: {fileID: 7645082157060403853}
     RRWheel: {fileID: 6840052749760868993}
     RLWheel: {fileID: 3111853026887180937}
-  gasInput: 0
+  gasInput: 1
   steeringInput: 0
   brakeInput: 0
   motorPower: 100

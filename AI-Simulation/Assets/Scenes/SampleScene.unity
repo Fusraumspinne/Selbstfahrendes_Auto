@@ -3296,60 +3296,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 177615500}
-  - component: {fileID: 177615499}
-  - component: {fileID: 177615498}
+  - component: {fileID: 177615501}
   m_Layer: 0
   m_Name: NEATManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &177615498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 177615497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef1aea4eccb7cc749a6f2bf5e99f09b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  populationSize: 50
-  numInputs: 11
-  numOutputs: 2
-  survivalRate: 0.5
-  generationText: {fileID: 1138910050}
-  carPrefab: {fileID: 2784717867662720248, guid: 7c9546a42bb766249a9d14321a34935e, type: 3}
-  target: {fileID: 1206196255}
-  weightMutateChance: 0.9
-  addConnMutateChance: 0.3
-  addNodeMutateChance: 0.2
---- !u!114 &177615499
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 177615497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 888d9fd516e09a743b5ef9f908179b29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  save: 1
-  trainSavedAgents: 1
-  spectateAgent: 1
-  genText: {fileID: 1138910050}
-  agentPrefab: {fileID: 2784717867662720248, guid: 7c9546a42bb766249a9d14321a34935e, type: 3}
-  target: {fileID: 1206196255}
-  populationSize: 250
-  userInterface:
-  - {fileID: 1161810293}
-  - {fileID: 928750600}
-  currentCamera: {fileID: 0}
+  m_IsActive: 1
 --- !u!4 &177615500
 Transform:
   m_ObjectHideFlags: 0
@@ -3365,6 +3319,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &177615501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177615497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c0bd1a69b22c344b8d5a1e5968277f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testBestAgent: 1
+  agentPrefab: {fileID: 2784717867662720248, guid: 99988232073eca442b66a68d81c17390, type: 3}
+  target: {fileID: 1206196258}
+  populationSize: 250
+  generationTime: 35
+  inputCount: 10
+  outputCount: 1
 --- !u!1 &181013881
 GameObject:
   m_ObjectHideFlags: 0
@@ -22147,7 +22120,7 @@ GameObject:
   - component: {fileID: 1206196259}
   m_Layer: 0
   m_Name: Target
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -22211,7 +22184,7 @@ Transform:
   m_GameObject: {fileID: 1206196255}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 180.8}
+  m_LocalPosition: {x: 156.9, y: 1, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22233,7 +22206,7 @@ MonoBehaviour:
   xMax: 160
   zMin: -160
   zMax: 160
-  speed: 6
+  speed: 8
   randomTimeMin: 5
   randomTimeMax: 15
   autoMove: 0
@@ -27918,7 +27891,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1553685134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32599,7 +32572,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1827211303
 Transform:
   m_ObjectHideFlags: 0
@@ -40344,8 +40317,8 @@ MeshFilter:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1553685135}
   - {fileID: 177615500}
+  - {fileID: 1553685135}
   - {fileID: 366915509}
   - {fileID: 777086837}
   - {fileID: 963194228}

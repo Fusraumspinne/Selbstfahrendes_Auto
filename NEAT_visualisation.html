@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>NEAT Network Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    circle {
+      fill: lightskyblue;
+    }
+
+    line {
+      stroke: lightblue;
+      opacity: 0.6;
+    }
+
+    text {
+      font-family: sans-serif;
+      font-size: 9px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <svg></svg>
+  <script>
+  d3.json("best_neat_agent.json").then(data => {
+    const width   = window.innerWidth,
+          height  = window.innerHeight,
+          padding = 50,      // oberer/unterer Rand
+          marginX = 100,     // Mindestabstand zu Input/Output-Spalte
+          r       = 12;      // Neuronen-Radius
+
+    // Typen trennen
+    const inputs  = data.nodes.filter(n=>n.type===0),
+          hiddens = data.nodes.filter(n=>n.type===1),
+          outputs = data.nodes.filter(n=>n.type===2);
+
+    // feste X-Werte für Input/Output
+    const xInput  = padding,
+          xOutput = width - padding;
+    // Bereich für Hidden (zwischen Input und Output)
+    const xMinH = xInput  + marginX,
+          xMaxH = xOutput - marginX;
+
+    // Input/Output gleichmäßig vertikal anordnen
+    function layoutColumn(nodes, x) {
+      const step = height / (nodes.length + 1);
+      return nodes.map((n,i) => ({ id:n.id, type:n.type, x, y:step*(i+1), raw:n }));
+    }
+    const inpPos = layoutColumn(inputs, xInput);
+    const outPos = layoutColumn(outputs, xOutput);
+
+    // Hidden: sortiert nach ID, dann Y gestaffelt, X nach value
+    const hidOrdered = hiddens
+      .map(n => ({ id:n.id, type:n.type, raw:n }))
+      .sort((a,b) => a.id - b.id); // Nach ID sortieren
+    const countH = hidOrdered.length;
+    const yStepH = height / (countH + 1);
+    const hidPos = hidOrdered.map((d,i) => {
+      // clamp raw.value in [-1,1]
+      const v = Math.max(-1, Math.min(1, d.raw.value));
+      // X linear map from [-1..1] to [xMinH..xMaxH]
+      return {
+        id:   d.id,
+        type: d.type,
+        x:    xMinH + ((v + 1) / 2) * (xMaxH - xMinH),
+        y:    yStepH * (i + 1),
+        raw:  d.raw
+      };
+    });
+
+    // alle Positionen zusammen
+    const allPos = [...inpPos, ...hidPos, ...outPos];
+    const posById = new Map(allPos.map(d=>[d.id,d]));
+
+    const svg = d3.select("svg");
+
+    // Verbindungen zeichnen
+    svg.selectAll("line")
+      .data(data.conns)
+      .join("line")
+        .attr("x1", d=>posById.get(d.inNode).x)
+        .attr("y1", d=>posById.get(d.inNode).y)
+        .attr("x2", d=>posById.get(d.outNode).x)
+        .attr("y2", d=>posById.get(d.outNode).y)
+        .attr("stroke-width", d=>Math.max(1, Math.abs(d.weight)*4))
+        .attr("stroke", d=>d.weight>0?"#4CAF50":"#F44336")
+      .append("title").text(d=>`w=${d.weight.toFixed(3)}`);
+
+    // Neuronen zeichnen
+    const nodeG = svg.selectAll("g.node")
+      .data(allPos)
+      .join("g")
+        .attr("class","node")
+        .attr("transform", d=>`translate(${d.x},${d.y})`);
+
+    nodeG.append("circle")
+        .attr("r", r)
+        .on("mouseover", function(){ d3.select(this).attr("fill","#2196F3"); })
+        .on("mouseout",  function(){ d3.select(this).attr("fill","lightskyblue"); });
+
+    nodeG.append("text")
+        .attr("dy","0.35em")
+        .attr("text-anchor","middle")
+        .attr("fill","#fff")
+        .text(d=>d.id);
+  })
+  .catch(err=>console.error("Fehler beim Laden der JSON:", err));
+  </script>
+</body>
+</html>
