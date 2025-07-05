@@ -1,4 +1,3 @@
-// NEAT_NeuralNetwork.cs
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,25 +41,21 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
     public List<ConnectionGene> conns = new List<ConnectionGene>();
     private float fitness;
 
-    private const float addNodeProb = 0.15f;  // 15% Chance, neuen Knoten
-    private const float addConnProb = 0.20f;  // 20% Chance, neue Verbindung
-    private const float weightMutateProb = 0.9f;   // 90% Chance, Gewichte zu mutieren
-    private const float weightPerturbProb = 0.8f;   // 80% davon kleine Schritte
-    private const float weightStepMax = 0.7f;   // Max Abweichung bei kleinen Schritten
+    private const float addNodeProb = 0.15f;  
+    private const float addConnProb = 0.20f; 
+    private const float weightMutateProb = 0.9f;  
+    private const float weightPerturbProb = 0.8f;  
+    private const float weightStepMax = 0.7f;  
 
     private System.Random rnd = new System.Random();
 
-    // Neuer Konstruktor: nur Input- und Output-Knoten
     public NEAT_NeuralNetwork(int inputCount, int outputCount)
     {
         int idCounter = 0;
-        // Input-Nodes
         for (int i = 0; i < inputCount; i++)
             nodes.Add(new NodeGene(idCounter++, NodeGene.NodeType.Input));
-        // Output-Nodes
         for (int i = 0; i < outputCount; i++)
             nodes.Add(new NodeGene(idCounter++, NodeGene.NodeType.Output));
-        // Vollverbundene initiale Verbindungen
         foreach (var nIn in nodes)
         {
             if (nIn.type != NodeGene.NodeType.Input) continue;
@@ -72,7 +67,6 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
         }
     }
 
-    // Copy-Konstruktor
     public NEAT_NeuralNetwork(NEAT_NeuralNetwork other)
     {
         rnd = other.rnd;
@@ -115,7 +109,6 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
 
     public void Mutate()
     {
-        // Gewichte mutieren
         foreach (var c in conns)
         {
             if (rnd.NextDouble() < weightMutateProb)
@@ -126,31 +119,25 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
                     c.weight = UnityEngine.Random.Range(-1f, 1f);
             }
         }
-        // Neue Verbindung
         if (rnd.NextDouble() < addConnProb)
             AddRandomConnection();
-        // Neues Neuron
         if (rnd.NextDouble() < addNodeProb)
             AddRandomNode();
     }
 
     private void AddRandomConnection()
     {
-        // Max. 100 Versuche, um eine gültige Verbindung zu finden
         for (int i = 0; i < 100; i++)
         {
             var a = nodes[rnd.Next(nodes.Count)];
             var b = nodes[rnd.Next(nodes.Count)];
 
-            // Keine Schleifen oder rückwärtsführende Verbindung auf Inputs
             if (a.id == b.id || b.type == NodeGene.NodeType.Input)
                 continue;
 
-            // Prüfen ob die Verbindung schon existiert
             bool exists = conns.Exists(c => c.inNode == a.id && c.outNode == b.id);
             if (exists) continue;
 
-            // Verbindung hinzufügen
             conns.Add(new ConnectionGene(a.id, b.id, UnityEngine.Random.Range(-1f, 1f)));
             return;
         }

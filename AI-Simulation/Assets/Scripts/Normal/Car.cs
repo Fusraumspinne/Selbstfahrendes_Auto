@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Car : MonoBehaviour
 {
+    [SerializeField] private bool useConstantSpeed;
+
     [SerializeField] private Rigidbody rig;
     [SerializeField] private WheelColliders colliders;
     [SerializeField] private WheelMeshes meshes;
@@ -48,18 +50,18 @@ public class Car : MonoBehaviour
 
             float[] vision = PerformRaycastVision();
 
-            float[] inputs = new float[11];
+            float[] inputs = new float[10];
             inputs[0] = angleToTarget;
             //inputs[0] = 0;
-            inputs[1] = gasInput;
+            //inputs[1] = gasInput;
             for (int i = 0; i < vision.Length; i++)
             {
-                if (i + 2 >= 11)
+                if (i + 1 >= 10)
                 {
                     break;
                 }
 
-                inputs[i + 2] = vision[i];
+                inputs[i + 1] = vision[i];
             }
 
             float[] output = net.FeedForward(inputs);
@@ -68,14 +70,14 @@ public class Car : MonoBehaviour
             steeringInput = newSteeringInput;
             previousSteeringInput = steeringInput;
 
-            gasInput = Mathf.Clamp(output[1], -1f, 1f);
+            //gasInput = Mathf.Clamp(output[1], -1f, 1f);
 
             float forwardSpeed = Vector3.Dot(rig.velocity, transform.forward);
             //net.AddFitness(forwardSpeed * 0.02f); 
             float distanceFactor = Mathf.Pow(0.5f, distance / 50f);
-            net.AddFitness(distanceFactor);
+            //net.AddFitness(distanceFactor);
 
-            //net.AddFitness((1f - Mathf.Abs(inputs[0])) / 2);
+            net.AddFitness(1f - Mathf.Abs(inputs[0]));
         }
     }
 
@@ -126,8 +128,18 @@ public class Car : MonoBehaviour
 
     void ApplySpeed()
     {
-        colliders.RRWheel.motorTorque = motorPower * gasInput;
-        colliders.RLWheel.motorTorque = motorPower * gasInput;
+        if (useConstantSpeed)
+        {
+            rig.isKinematic = true;
+
+            float moveAmount = gasInput * 4 * Time.deltaTime;
+            transform.position += transform.forward * moveAmount;
+        }
+        else
+        {
+            colliders.RRWheel.motorTorque = motorPower * gasInput;
+            colliders.RLWheel.motorTorque = motorPower * gasInput;
+        }
     }
 
     void ApplySteering()
@@ -135,10 +147,19 @@ public class Car : MonoBehaviour
         steeringInput = smoothingFactor * previousSteeringInput + (1 - smoothingFactor) * steeringInput;
         previousSteeringInput = steeringInput;
 
-        float steeringAngle = steeringInput * 30;
-        colliders.FRWheel.steerAngle = steeringAngle;
-        colliders.FLWheel.steerAngle = steeringAngle;
+        if (useConstantSpeed)
+        {
+            float rotationAmount = steeringInput * 30f * Time.deltaTime;
+            transform.Rotate(0f, rotationAmount, 0f);
+        }
+        else
+        {
+            float steeringAngle = steeringInput * 30f;
+            colliders.FRWheel.steerAngle = steeringAngle;
+            colliders.FLWheel.steerAngle = steeringAngle;
+        }
     }
+
 
     void ApplyWheels()
     {

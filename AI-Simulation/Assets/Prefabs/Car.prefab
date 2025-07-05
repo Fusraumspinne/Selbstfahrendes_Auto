@@ -240,6 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c850f0a6526d4af41aa28701fe764554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useConstantSpeed: 1
   rig: {fileID: 569231527397741733}
   colliders:
     FRWheel: {fileID: 4906132614067498471}
@@ -251,7 +252,7 @@ MonoBehaviour:
     FLWheel: {fileID: 7645082157060403853}
     RRWheel: {fileID: 6840052749760868993}
     RLWheel: {fileID: 3111853026887180937}
-  gasInput: 0
+  gasInput: 1
   steeringInput: 0
   brakeInput: 0
   motorPower: 100

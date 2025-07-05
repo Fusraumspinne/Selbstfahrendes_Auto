@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NEAT_Car : MonoBehaviour
@@ -15,7 +16,6 @@ public class NEAT_Car : MonoBehaviour
     [SerializeField] private float brakePower;
     [SerializeField] private float slipAngle;
     [SerializeField] private float speed;
-    private float previousDistance;
 
     [SerializeField] private float smoothingFactor;
 
@@ -68,29 +68,23 @@ public class NEAT_Car : MonoBehaviour
 
             //gasInput = Mathf.Clamp(output[1], -1f, 1f);
 
+            float distanceFactor = Mathf.Exp(-distance / 53f);
 
-            float distanceFactor = Mathf.Pow(0.5f, distance / 50f);
-            float orientationFitness = (1f - Mathf.Abs(inputs[0])) / 2;
-            float sumVision = 0f;
-            foreach (var v in vision) sumVision += v;
-            float visionFitness = sumVision / vision.Length;
+            float orientationFitness = (1f - Mathf.Abs(inputs[0])) / 2f;
 
-            float progress = 0;
-
-            if (previousDistance > 0)
+            float minVision = vision.Min();     
+            float dangerPenalty = 0f;
+            if (minVision < 0.1f)
             {
-                progress = Mathf.Max(0, previousDistance - distance);
+                dangerPenalty = (0.1f - minVision) * 10f;  
             }
 
-            float totalFitness = 0;
-            totalFitness += distanceFactor * 0.5f;
-            totalFitness += orientationFitness * 0.3f;
-            totalFitness += visionFitness * 0.1f;
-            totalFitness += progress * 0.5f;
+            float totalFitness = 0f;
+            //totalFitness += distanceFactor * 0.5f;
+            totalFitness += orientationFitness * 1f;
+            //totalFitness -= dangerPenalty * 1;   
 
             net.AddFitness(totalFitness * Time.fixedDeltaTime);
-
-            previousDistance = distance;
         }
     }
 

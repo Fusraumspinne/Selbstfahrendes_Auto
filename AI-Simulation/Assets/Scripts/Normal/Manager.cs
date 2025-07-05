@@ -20,9 +20,12 @@ public class Manager : MonoBehaviour
     private bool isTraining = false;
     public int populationSize;
     private int generationNumber = 0;
-    private int[] layers = new int[] { 11, 64, 32, 16, 2 };
+    private int[] layers = new int[] { 10, 16, 8, 1 };
     private List<NeuralNetwork> nets;
     private List<Car> agentList = null;
+
+    public GameObject spawnWallZone;
+    public float spawnWallTimer;
 
     [SerializeField] private List<GameObject> userInterface;
 
@@ -43,6 +46,9 @@ public class Manager : MonoBehaviour
             }
             else
             {
+                spawnWallZone.SetActive(false);
+                StartCoroutine(SpawnWallZone());
+
                 nets.Sort();
 
                 if (save)
@@ -70,19 +76,19 @@ public class Manager : MonoBehaviour
 
             if (generationNumber <= 50)
             {
-                Invoke("Timer", 15f);
+                Invoke("Timer", 20f);
             }
             else if (generationNumber <= 100)
             {
-                Invoke("Timer", 20f);
+                Invoke("Timer", 25f);
             }
             else if (generationNumber <= 250)
             {
-                Invoke("Timer", 30f);
+                Invoke("Timer", 35f);
             }
             else
             {
-                Invoke("Timer", 45f);
+                Invoke("Timer", 50f);
             }
 
             if (trainSavedAgents)
@@ -176,7 +182,7 @@ public class Manager : MonoBehaviour
 
         generationNumber = savedNetwork.generation;
 
-        int[] layers = { 11, 64, 32, 16, 2 };
+        int[] layers = { 10, 16, 8, 1 };
         NeuralNetwork reconstructedNetwork = new NeuralNetwork(layers);
 
         float[][][] weights = new float[savedNetwork.layerArrays.Length][][];
@@ -320,7 +326,7 @@ public class Manager : MonoBehaviour
 
         generationNumber = savedNetwork.generation;
 
-        int[] layers = { 11, 64, 32, 16, 2 };
+        int[] layers = { 10, 16, 8, 1 };
         NeuralNetwork reconstructedNetwork = new NeuralNetwork(layers);
 
         float[][][] weights = new float[savedNetwork.layerArrays.Length][][];
@@ -355,7 +361,12 @@ public class Manager : MonoBehaviour
             currentCamera.transform.localPosition = Vector3.zero;
             currentCamera.transform.localRotation = Quaternion.identity;
         }
+    }
 
+    private IEnumerator SpawnWallZone()
+    {
+        yield return new WaitForSeconds(spawnWallTimer);
+        spawnWallZone.SetActive(true);
     }
 }
 

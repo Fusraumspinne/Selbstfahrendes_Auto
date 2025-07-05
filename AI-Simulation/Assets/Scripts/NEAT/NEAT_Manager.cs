@@ -1,4 +1,5 @@
 // NEAT_Manager.cs
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -31,12 +32,15 @@ public class NEAT_Manager : MonoBehaviour
     public Transform target;
     public int populationSize;
     public float generationTime;
-    public int inputCount;   // number of inputs
-    public int outputCount;   // number of outputs
+    public int inputCount;  
+    public int outputCount;
 
     private List<NEAT_NeuralNetwork> nets;
     private List<NEAT_Car> agents;
     private int generation = 0;
+
+    public GameObject spawnWallZone;
+    public float spawnWallTimer;
 
     void Start()
     {
@@ -53,13 +57,15 @@ public class NEAT_Manager : MonoBehaviour
 
     private void InitPopulation()
     {
+        spawnWallZone.SetActive(false);
+        StartCoroutine(SpawnWallZone());
+
         string path = Path.Combine(Application.persistentDataPath, "best_neat_agent.json");
 
         nets = new List<NEAT_NeuralNetwork>();
 
         if (File.Exists(path))
         {
-            // Lade gespeichertes Netzwerk
             string json = File.ReadAllText(path);
             var saved = JsonUtility.FromJson<SavedNEATNetwork>(json);
 
@@ -78,11 +84,9 @@ public class NEAT_Manager : MonoBehaviour
                 baseNet.conns.Add(cg);
             }
 
-            // Erste Hälfte: direkte Kopien (Eliten)
             for (int i = 0; i < populationSize / 2; i++)
                 nets.Add(new NEAT_NeuralNetwork(baseNet)); // kopieren
 
-            // Zweite Hälfte: mutierte Varianten
             for (int i = populationSize / 2; i < populationSize; i++)
             {
                 var mutated = new NEAT_NeuralNetwork(baseNet);
@@ -94,7 +98,6 @@ public class NEAT_Manager : MonoBehaviour
         }
         else
         {
-            // Kein Save: neue Population starten
             for (int i = 0; i < populationSize; i++)
             {
                 var net = new NEAT_NeuralNetwork(inputCount, outputCount);
@@ -161,10 +164,11 @@ public class NEAT_Manager : MonoBehaviour
 
     private void NextGeneration()
     {
-        // Sort networks by fitness descending
+        spawnWallZone.SetActive(false);
+        StartCoroutine(SpawnWallZone());
+
         nets.Sort((a, b) => b.GetFitness().CompareTo(a.GetFitness()));
 
-        // Save best only
         SaveBestNetwork(nets[0]);
 
         int survive = populationSize / 2;
@@ -174,7 +178,6 @@ public class NEAT_Manager : MonoBehaviour
         for (int i = 0; i < survive; i++)
             newPop.Add(new NEAT_NeuralNetwork(nets[i]));
 
-        // Breed rest
         for (int i = survive; i < populationSize; i++)
         {
             var child = new NEAT_NeuralNetwork(nets[i - survive]);
@@ -213,5 +216,11 @@ public class NEAT_Manager : MonoBehaviour
         string json = JsonUtility.ToJson(save, true);
         string path = Path.Combine(Application.persistentDataPath, "best_neat_agent.json");
         File.WriteAllText(path, json);
+    }
+
+    private IEnumerator SpawnWallZone()
+    {
+        yield return new WaitForSeconds(spawnWallTimer);
+        spawnWallZone.SetActive(true);
     }
 }
