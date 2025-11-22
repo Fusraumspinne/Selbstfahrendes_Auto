@@ -1,4 +1,3 @@
-// NEAT_Manager.cs
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +9,6 @@ public class SavedConnection
     public int inNode;
     public int outNode;
     public float weight;
-    public bool enabled;
 }
 
 [System.Serializable]
@@ -80,12 +78,12 @@ public class NEAT_Manager : MonoBehaviour
 
             foreach (var c in saved.conns)
             {
-                var cg = new ConnectionGene(c.inNode, c.outNode, c.weight) { enabled = c.enabled };
+                var cg = new ConnectionGene(c.inNode, c.outNode, c.weight);
                 baseNet.conns.Add(cg);
             }
 
             for (int i = 0; i < populationSize / 2; i++)
-                nets.Add(new NEAT_NeuralNetwork(baseNet)); // kopieren
+                nets.Add(new NEAT_NeuralNetwork(baseNet));
 
             for (int i = populationSize / 2; i < populationSize; i++)
             {
@@ -132,7 +130,7 @@ public class NEAT_Manager : MonoBehaviour
 
         foreach (var c in saved.conns)
         {
-            var cg = new ConnectionGene(c.inNode, c.outNode, c.weight) { enabled = c.enabled };
+            var cg = new ConnectionGene(c.inNode, c.outNode, c.weight);
             net.conns.Add(cg);
         }
 
@@ -174,7 +172,6 @@ public class NEAT_Manager : MonoBehaviour
         int survive = populationSize / 2;
         var newPop = new List<NEAT_NeuralNetwork>();
 
-        // Elitism
         for (int i = 0; i < survive; i++)
             newPop.Add(new NEAT_NeuralNetwork(nets[i]));
 
@@ -209,7 +206,6 @@ public class NEAT_Manager : MonoBehaviour
                 inNode = c.inNode,
                 outNode = c.outNode,
                 weight = c.weight,
-                enabled = c.enabled
             });
         }
 
@@ -221,6 +217,6 @@ public class NEAT_Manager : MonoBehaviour
     private IEnumerator SpawnWallZone()
     {
         yield return new WaitForSeconds(spawnWallTimer);
-        spawnWallZone.SetActive(true);
+        //spawnWallZone.SetActive(true);
     }
 }

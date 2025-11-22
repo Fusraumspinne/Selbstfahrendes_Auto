@@ -47,7 +47,7 @@ public class Manager : MonoBehaviour
             else
             {
                 spawnWallZone.SetActive(false);
-                StartCoroutine(SpawnWallZone());
+                //StartCoroutine(SpawnWallZone());
 
                 nets.Sort();
 
@@ -56,13 +56,39 @@ public class Manager : MonoBehaviour
                     Save();
                 }
 
-                for (int i = 0; i < populationSize / 2; i++)
-                {
-                    nets[i] = new NeuralNetwork(nets[i + (populationSize / 2)]);
-                    nets[i].Mutate();
+                int eliteCount = Mathf.Max(1, Mathf.CeilToInt(populationSize * 0.05f));
+                float[] weights = new float[eliteCount];
+                float totalWeight = 0f;
 
-                    nets[i + (populationSize / 2)] = new NeuralNetwork(nets[i + (populationSize / 2)]);
+                for (int i = 0; i < eliteCount; i++)
+                {
+                    weights[i] = Mathf.Pow(0.9f, i);
+                    totalWeight += weights[i];
                 }
+
+                NeuralNetwork SelectParent()
+                {
+                    float r = Random.Range(0f, totalWeight);
+                    float cumulative = 0f;
+                    for (int i = 0; i < eliteCount; i++)
+                    {
+                        cumulative += weights[i];
+                        if (r <= cumulative)
+                        {
+                            return new NeuralNetwork(nets[populationSize - 1 - i]);
+                        }
+                    }
+                    return new NeuralNetwork(nets[populationSize - 1]);
+                }
+
+                List<NeuralNetwork> newGen = new List<NeuralNetwork>();
+                for (int i = 0; i < populationSize; i++)
+                {
+                    var parent = SelectParent();
+                    parent.Mutate();
+                    newGen.Add(parent);
+                }
+                nets = newGen;
 
                 for (int i = 0; i < populationSize; i++)
                 {
@@ -80,15 +106,23 @@ public class Manager : MonoBehaviour
             }
             else if (generationNumber <= 100)
             {
-                Invoke("Timer", 25f);
+                Invoke("Timer", 30f);
             }
             else if (generationNumber <= 250)
             {
-                Invoke("Timer", 35f);
+                Invoke("Timer", 45f);
+            }
+            else if (generationNumber <= 300)
+            {
+                Invoke("Timer", 60f);
+            }
+            else if (generationNumber <= 350)
+            {
+                Invoke("Timer", 90f);
             }
             else
             {
-                Invoke("Timer", 50f);
+                Invoke("Timer", 120f);
             }
 
             if (trainSavedAgents)
@@ -111,10 +145,9 @@ public class Manager : MonoBehaviour
         genText.text = "Generation: " + generationNumber.ToString();
     }
 
+    private Car lastBestAgent;
     void UpdateCameraTarget()
     {
-        Car lastBestAgent = null;
-
         Car bestAgent = null;
 
         foreach (Car agent in agentList)
@@ -133,7 +166,12 @@ public class Manager : MonoBehaviour
         {
             return;
         }
-        
+
+        if(lastBestAgent)
+            lastBestAgent.GetComponent<Car>().selected = false;
+        if(bestAgent)
+        bestAgent.GetComponent<Car>().selected = true;
+
         lastBestAgent = bestAgent;
 
         if (currentCamera != null)
@@ -342,7 +380,7 @@ public class Manager : MonoBehaviour
 
         reconstructedNetwork.SetWeights(weights);
 
-        Car agent = Instantiate(agentPrefab, Vector3.zero, Quaternion.identity).GetComponent<Car>();
+        Car agent = Instantiate(agentPrefab, new Vector3(0, 2, 0), Quaternion.identity).GetComponent<Car>();
         agent.Init(reconstructedNetwork, target.transform);
 
         if (spectateAgent)
@@ -353,6 +391,8 @@ public class Manager : MonoBehaviour
                 Debug.LogWarning("CameraHolder nicht gefunden!");
                 return;
             }
+
+            agent.selected = true;
 
             currentCamera = new GameObject("BestAgentCamera");
             Camera cam = currentCamera.AddComponent<Camera>();

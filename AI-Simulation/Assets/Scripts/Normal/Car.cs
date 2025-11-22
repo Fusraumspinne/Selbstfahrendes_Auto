@@ -29,6 +29,8 @@ public class Car : MonoBehaviour
 
     private NeuralNetwork net;
 
+    public bool selected;
+
     private void Update()
     {
         speed = rig.velocity.magnitude;
@@ -36,7 +38,7 @@ public class Car : MonoBehaviour
         //CheckInput();
         ApplySpeed();
         ApplySteering();
-        ApplyWheels();
+        //ApplyWheels();
     }
 
     void FixedUpdate()
@@ -103,11 +105,19 @@ public class Car : MonoBehaviour
 
         if (Physics.Raycast(transform.position, direction, out hit, maxDistance, layerMask))
         {
-            Debug.DrawRay(transform.position, direction * hit.distance, Color.red);
+            if (selected)
+            {    
+                Debug.DrawRay(transform.position, direction * hit.distance, Color.red);
+            }
+
             return hit.distance / maxDistance;
         }
 
-        Debug.DrawRay(transform.position, direction * maxDistance, Color.green);
+        if (selected)
+        {
+            Debug.DrawRay(transform.position, direction * maxDistance, Color.green);
+        }
+
         return 1f;
     }
 

@@ -18,19 +18,33 @@ public class Traget : MonoBehaviour
     private Vector3 direction;
 
     public bool autoMove;
+    public bool moveOnZOnly;
 
     void Start()
     {
-        direction = GetRandomDirection();
-        timeToChangeDirection = GetRandomTime();
+        if (moveOnZOnly)
+        {
+            direction = Vector3.forward;
+        }
+        else
+        {
+            direction = GetRandomDirection();
+            timeToChangeDirection = GetRandomTime();
+        }
     }
 
     void Update()
     {
-        if (autoMove)
-        {
-            transform.Translate(direction * speed * Time.deltaTime, Space.World);
+        if (!autoMove) return;
 
+        transform.Translate(direction * speed * Time.deltaTime, Space.World);
+
+        if (moveOnZOnly)
+        {
+            MoveOnZAxis();
+        }
+        else
+        {
             timeToChangeDirection -= Time.deltaTime;
             if (timeToChangeDirection <= 0)
             {
@@ -82,6 +96,24 @@ public class Traget : MonoBehaviour
         {
             position.z = zMax;
             direction.z = -Mathf.Abs(direction.z);
+        }
+
+        transform.position = position;
+    }
+    
+     void MoveOnZAxis()
+    {
+        Vector3 position = transform.position;
+
+        if (position.z < zMin)
+        {
+            position.z = zMin;
+            direction = Vector3.forward;
+        }
+        else if (position.z > zMax)
+        {
+            position.z = zMax;
+            direction = Vector3.back;
         }
 
         transform.position = position;

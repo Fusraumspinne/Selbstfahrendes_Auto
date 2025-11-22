@@ -80,7 +80,7 @@ public class NEAT_Car : MonoBehaviour
             }
 
             float totalFitness = 0f;
-            //totalFitness += distanceFactor * 0.5f;
+            totalFitness += distanceFactor * 0.5f;
             totalFitness += orientationFitness * 1f;
             //totalFitness -= dangerPenalty * 1;   
 

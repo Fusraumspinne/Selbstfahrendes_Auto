@@ -24,28 +24,28 @@ public class ConnectionGene
     public int inNode;
     public int outNode;
     public float weight;
-    public bool enabled;
 
     public ConnectionGene(int inNode, int outNode, float weight)
     {
         this.inNode = inNode;
         this.outNode = outNode;
         this.weight = weight;
-        this.enabled = true;
     }
 }
 
 public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
 {
-    public List<NodeGene> nodes = new List<NodeGene>();
+     public List<NodeGene> nodes = new List<NodeGene>();
     public List<ConnectionGene> conns = new List<ConnectionGene>();
     private float fitness;
 
-    private const float addNodeProb = 0.15f;  
-    private const float addConnProb = 0.20f; 
-    private const float weightMutateProb = 0.9f;  
-    private const float weightPerturbProb = 0.8f;  
-    private const float weightStepMax = 0.7f;  
+    private const float addNodeProb = 0.12f;    
+    private const float addConnProb = 0.18f;      
+    private const float deleteConnProb = 0.08f;   
+    private const float weightMutateProb = 0.9f;
+    private const float weightPerturbProb = 0.8f;
+    private const float weightStepMax = 0.5f;     
+    private const float weightClamp = 3f;       
 
     private System.Random rnd = new System.Random();
 
@@ -56,6 +56,7 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
             nodes.Add(new NodeGene(idCounter++, NodeGene.NodeType.Input));
         for (int i = 0; i < outputCount; i++)
             nodes.Add(new NodeGene(idCounter++, NodeGene.NodeType.Output));
+
         foreach (var nIn in nodes)
         {
             if (nIn.type != NodeGene.NodeType.Input) continue;
@@ -74,7 +75,7 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
             nodes.Add(new NodeGene(n.id, n.type));
         foreach (var c in other.conns)
         {
-            var nc = new ConnectionGene(c.inNode, c.outNode, c.weight) { enabled = c.enabled };
+            var nc = new ConnectionGene(c.inNode, c.outNode, c.weight);
             conns.Add(nc);
         }
     }
@@ -93,8 +94,9 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
             float sum = 0f;
             foreach (var c in conns)
             {
-                if (!c.enabled || c.outNode != n.id) continue;
+                if (c.outNode != n.id) continue;
                 var src = nodes.Find(x => x.id == c.inNode);
+                if (src == null) continue;
                 sum += src.value * c.weight;
             }
             n.value = (float)Math.Tanh(sum);
@@ -114,13 +116,25 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
             if (rnd.NextDouble() < weightMutateProb)
             {
                 if (rnd.NextDouble() < weightPerturbProb)
-                    c.weight += UnityEngine.Random.Range(-weightStepMax, weightStepMax);
+                {
+                    float delta = UnityEngine.Random.Range(-weightStepMax, weightStepMax);
+                    c.weight += delta;
+                }
                 else
+                {
                     c.weight = UnityEngine.Random.Range(-1f, 1f);
+                }
+
+                c.weight = Mathf.Clamp(c.weight, -weightClamp, weightClamp);
             }
         }
+
         if (rnd.NextDouble() < addConnProb)
             AddRandomConnection();
+
+        if (rnd.NextDouble() < deleteConnProb)
+            RemoveRandomConnection();
+
         if (rnd.NextDouble() < addNodeProb)
             AddRandomNode();
     }
@@ -132,8 +146,8 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
             var a = nodes[rnd.Next(nodes.Count)];
             var b = nodes[rnd.Next(nodes.Count)];
 
-            if (a.id == b.id || b.type == NodeGene.NodeType.Input)
-                continue;
+            if (a.id == b.id) continue;
+            if (b.type == NodeGene.NodeType.Input) continue;
 
             bool exists = conns.Exists(c => c.inNode == a.id && c.outNode == b.id);
             if (exists) continue;
@@ -143,18 +157,33 @@ public class NEAT_NeuralNetwork : IComparable<NEAT_NeuralNetwork>
         }
     }
 
+    private void RemoveRandomConnection()
+    {
+        if (conns.Count == 0) return;
+
+        int idx = rnd.Next(conns.Count);
+        conns.RemoveAt(idx);
+    }
 
     private void AddRandomNode()
     {
-        var candidates = conns.FindAll(c => c.enabled);
-        if (candidates.Count == 0) return;
-        var cOld = candidates[rnd.Next(candidates.Count)];
-        cOld.enabled = false;
-        int newId = nodes[^1].id + 1;
+        if (conns.Count == 0) return;
+        
+        int idx = rnd.Next(conns.Count);
+        var cOld = conns[idx];
+
+        int inId = cOld.inNode;
+        int outId = cOld.outNode;
+        float oldWeight = cOld.weight;
+
+        conns.RemoveAt(idx);
+
+        int newId = (nodes.Count > 0) ? nodes[^1].id + 1 : 0;
         var newNode = new NodeGene(newId, NodeGene.NodeType.Hidden);
         nodes.Add(newNode);
-        conns.Add(new ConnectionGene(cOld.inNode, newId, 1f));
-        conns.Add(new ConnectionGene(newId, cOld.outNode, cOld.weight));
+
+        conns.Add(new ConnectionGene(inId, newId, 1f));
+        conns.Add(new ConnectionGene(newId, outId, oldWeight));
     }
 
     public void AddFitness(float f) => fitness += f;
