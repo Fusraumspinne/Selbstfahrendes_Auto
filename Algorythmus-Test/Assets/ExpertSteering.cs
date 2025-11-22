@@ -6,28 +6,20 @@ using System.Linq;
 
 public class ExpertSteering : MonoBehaviour
 {
-    public SensorManager sensorManager;
-    public float forwardSpeed = 5f;
-    public float steerFactor = 2f;
-    public float actionThreshold = 0.2f;
     public ScenarioSpawner spawner;
-    public LayerMask obstacleMask;
-    public float flushInterval;
+    public SensorManager sensorManager;
+
+    public string csvPath;
+
+    public float forwardSpeed;
+    public float steerFactor;
+    public float actionThreshold;
 
     public Rigidbody rb;
-    private bool crashed = false;
     private List<string> buffer = new List<string>();
-    private float flushTimer = 0f;
-
-    void Start()
-    {
-        ResetCar();
-    }
 
     void FixedUpdate()
     {
-        if (crashed) return;
-
         float[] sensors = sensorManager.ReadSensors();
         Vector3 steering = Vector3.zero;
 
@@ -57,47 +49,23 @@ public class ExpertSteering : MonoBehaviour
             action.ToString(CultureInfo.InvariantCulture);
 
         buffer.Add(line);
+    }
 
-        flushTimer += Time.fixedDeltaTime;
-        if (flushTimer >= flushInterval)
+    public void FinishAndSave(bool save)
+    {
+        if (buffer.Count > 0 && save)
         {
-            FinishRun();
+            File.AppendAllLines(csvPath, buffer);
         }
+
+        buffer.Clear();
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Obstacle"))
         {
-            crashed = true;
-            buffer.Clear();
-            ResetCar();
+            spawner.FinishRun(false);
         }
-    }
-
-    public void FinishRun()
-    {
-        if (!crashed)
-        {
-            string path = Path.Combine(Application.persistentDataPath, "training.csv");
-            File.AppendAllLines(path, buffer);
-        }
-
-        ResetCar();
-    }
-
-    void ResetCar()
-    {
-        transform.position = Vector3.zero;
-        transform.rotation = Quaternion.identity;
-
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-
-        crashed = false;
-        buffer.Clear();
-        flushTimer = 0f;
-
-        spawner.SpawnNewPattern();
     }
 }

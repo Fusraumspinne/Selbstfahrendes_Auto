@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
-data_folder = "tensorflow"
+data_folder = "tensorflow/TrainingData"
 csv_files = glob.glob(os.path.join(data_folder, "*.csv"))
 
 if not csv_files:
@@ -71,7 +71,7 @@ history = model.fit(
     X_train, y_train,
     validation_data=(X_val, y_val),
     batch_size=256,
-    epochs=500
+    epochs=100
 )
 
 loss, acc = model.evaluate(X_test, y_test)
