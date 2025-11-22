@@ -1,11 +1,8 @@
-#!/usr/bin/env python3
-"""
-Pi inference script
-- liest 9 Ultraschall-Sensoren + QMC Kompass (wie vorher)
-- lädt avoid_model.tflite (falls nicht vorhanden, versucht avoid_model.h5 mit TF)
-- berechnet Steering (-1 .. +1)
-- schreibt Servo-Pulsewidth (pigpio)
-"""
+# Befehle
+# cd /home/Desktop/Selbstfahrendes_Auto
+# sudo pigpiod
+# source venv/bin/activate
+# python3 tensorflow/tensorflow.py
 
 import time
 import math
