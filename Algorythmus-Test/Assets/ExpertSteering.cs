@@ -21,18 +21,25 @@ public class ExpertSteering : MonoBehaviour
     void FixedUpdate()
     {
         float[] sensors = sensorManager.ReadSensors();
+
+        float[] weights = { 0.5f, 0.6f, 0.75f, 0.9f, 1f, 0.9f, 0.75f, 0.6f, 0.5f };
+
         Vector3 steering = Vector3.zero;
 
         for (int i = 0; i < sensors.Length; i++)
         {
             float dist = Mathf.Clamp01(sensors[i]);
-            float strength = 1f - dist;
+            float strength = (1f - dist) * weights[i];
             Vector3 dir = sensorManager.sensors[i].forward;
+
             steering += (-dir) * strength;
         }
 
-        float steeringX = steering.x * steerFactor;
-        float clamped = Mathf.Clamp(steeringX, -1f, 1f);
+        float steer = Vector3.Dot(steering, transform.right);
+        float clamped = Mathf.Clamp(steer * steerFactor, -1f, 1f);
+
+        float speedFactor = Mathf.Clamp01(sensors[4]);
+        float currentSpeed = forwardSpeed * speedFactor;
 
         transform.Rotate(0f, clamped * 60f * Time.fixedDeltaTime, 0f);
         transform.Translate(Vector3.forward * forwardSpeed * Time.fixedDeltaTime);
@@ -41,12 +48,8 @@ public class ExpertSteering : MonoBehaviour
         if (clamped < -actionThreshold) action = 0;
         else if (clamped > actionThreshold) action = 2;
 
-        string line =
-            string.Join(",",
-                sensors.Select(s => s.ToString(CultureInfo.InvariantCulture))
-            )
-            + "," +
-            action.ToString(CultureInfo.InvariantCulture);
+        string line = string.Join(",", sensors.Select(s => s.ToString(CultureInfo.InvariantCulture)))
+            + "," + action.ToString(CultureInfo.InvariantCulture);
 
         buffer.Add(line);
     }

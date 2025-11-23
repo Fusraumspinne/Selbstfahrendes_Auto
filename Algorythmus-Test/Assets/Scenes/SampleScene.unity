@@ -462,7 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrainingManager
   spawnerPrefab: {fileID: 4429955034451807511, guid: 8600ed94408783b4f91265b50547f632, type: 3}
-  simulations: 100
+  simulations: 50
   spacing: 125
 --- !u!4 &1295364535
 Transform:

@@ -46,10 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScenarioSpawner
   obstaclePrefab: {fileID: 2645018096552273947, guid: 336cf3a27fd3bf44da61525128840a0c, type: 3}
   carPrefab: {fileID: 3173204037920617322, guid: c69b7280ec5fa284dbac4f64f78a6f82, type: 3}
-  minObstacleCount: 50
-  maxObstacleCount: 150
+  minObstacleCount: 100
+  maxObstacleCount: 400
   minObstacleSize: 1
-  maxObstacleSize: 5
+  maxObstacleSize: 4
   areaSize: {x: 100, y: 100}
   clearCenterSize: 10
   center: {x: 0, y: 0, z: 0}
